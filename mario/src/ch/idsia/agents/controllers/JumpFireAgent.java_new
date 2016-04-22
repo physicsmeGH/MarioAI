@@ -1,0 +1,208 @@
+package ch.idsia.agents.controllers;
+
+import ch.idsia.agents.Agent;
+import ch.idsia.benchmark.mario.engine.sprites.Mario;
+import ch.idsia.benchmark.mario.environments.Environment;
+import ch.idsia.benchmark.mario.environments.MarioEnvironment;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: Sergey Karakovskiy
+ * Date: Apr 25, 2009
+ * Time: 12:27:07 AM
+ * Package: ch.idsia.agents.controllers;
+ */
+
+public class JumpFireAgent extends BasicMarioAIAgent implements Agent
+{
+	byte[][] olderLevelScene; 
+	int stuckTimer = 0;
+	boolean suicideSwitch = false;
+	int STUCK_THRESHOLD = 700;
+	int LEFT = -1;
+	int RIGHT = 1;
+	int currentDirection;
+	
+    public JumpFireAgent()
+    {
+        super("JumpFireAgent");
+        reset();
+    }
+    double getDiff(byte[][] ls1,byte[][] ls2){
+    	int diff = 0;
+    	for(int i=0;i<ls1.length;i++){
+    		for(int j=0;j<ls1[0].length;j++){
+    			if(ls1[i][j]!=ls2[i][j]){
+    				diff++;
+    			}
+    		}
+    	}
+    	double result;
+    	result = (double)diff/(ls1.length*ls1[0].length);
+    	return result;
+    }
+
+    public boolean[] getAction()
+    
+    {
+    	
+			stuckTimer++;
+			System.out.println(stuckTimer);
+		
+    	
+    	
+		if (stuckTimer > STUCK_THRESHOLD){
+			suicideSwitch = true;
+		}
+    	int enemyState;
+    	if(suicideSwitch){
+    		retreat();
+    		enemyState = (int)(dangerOfEnemy(LEFT)[0]);
+    		int isEnemyPresent = (int)getClosestEnemyPos(currentDirection)[0];
+    		float enemyXPos = getClosestEnemyPos(currentDirection)[1];
+    		if(isEnemyPresent!=0 && enemyXPos >0){
+    			forward();
+    		}
+    		else{
+    			retreat();
+    		}
+    		switch (enemyState){
+    		case 0:
+    			//no danger
+    			/*if(!isMarioOnGround){
+    				action[Mario.KEY_UP] = true;
+
+    			}*/
+    			action[Mario.KEY_JUMP] = /*!action[Mario.KEY_JUMP] && */isMarioAbleToJump || !isMarioOnGround;
+    			break;
+    		case 1:
+
+    			//enemy, lower or same height
+    			if(isMarioAbleToShoot){
+    				action[Mario.KEY_SPEED] = false;
+    			}
+    			else{
+    				action[Mario.KEY_JUMP] = false;
+    			}
+    			break;
+    		case 2:
+    			action[Mario.KEY_JUMP] = /*!action[Mario.KEY_JUMP] && */isMarioAbleToJump || !isMarioOnGround;
+
+    			break;
+
+    			//enemy, higher
+
+
+    		}
+    	}
+    	else{
+    		forward();
+    		enemyState = (int)(dangerOfEnemy(RIGHT)[0]);
+    		switch (enemyState){
+    		case 0:
+    			//no danger
+    			/*if(!isMarioOnGround){
+    				action[Mario.KEY_UP] = true;
+
+    			}*/
+    			action[Mario.KEY_JUMP] = /*!action[Mario.KEY_JUMP] && */isMarioAbleToJump || !isMarioOnGround;
+    			break;
+    		case 1:
+
+    			//enemy, lower or same height
+    			if(isMarioAbleToShoot){
+    				action[Mario.KEY_SPEED] = true;
+    			}
+    			else{
+    				action[Mario.KEY_JUMP] = isMarioAbleToJump || !isMarioOnGround;
+    			}
+    			break;
+    		case 2:
+    			retreat();
+
+    			break;
+
+    			//enemy, higher
+
+
+    		}
+    	}
+    	
+        
+        return action;
+    }
+    private float[] getClosestEnemyPos(int direction){
+    	float[] result = new float[3];
+    	result[0] = (float)0;
+    	result[1] = (float)20000000;
+    	float directionC;
+    	
+    	for(int i=0; i<this.enemiesFloatPos.length; i+=3){
+    		float relativeXPos = enemiesFloatPos[i+1];
+    		float relativeYPos = enemiesFloatPos[i+2];
+    		if(suicideSwitch){
+    			directionC = 1;
+    		}
+    		else{
+    			directionC =direction*relativeXPos;
+    		}
+    		if(directionC >0 && Math.abs(relativeXPos) < result[1] ){
+    			result[0] = 1;
+    			result[1] = relativeXPos;
+    			result[2] = relativeYPos;
+    		}
+    	}
+    	
+    	return result;
+    	
+    }
+    private float[] dangerOfEnemy(int direction){
+    	float[] result = getClosestEnemyPos(direction);
+    	if((int)result[0]>0){
+    		if(direction*result[1]< 30){
+    			if(result[2]>0 || result[2]<-50){
+    				//lower or higher but very far
+    				result[0] = 0;
+    			}
+    			else if(result[2]> -10){	
+    				//same height
+    				result[0] = 1;
+    			}
+    			else{
+    				//higher
+    				result[0] = 2;
+    			}
+    		}
+    		else{
+    			result[0] = 0;
+    		}
+    	}
+    	
+    	//Float[] enemyPos = 
+    	
+    	
+    	return result;
+    }
+    
+    public void retreat(){
+    	currentDirection = LEFT;
+    	action[Mario.KEY_RIGHT] = false;
+    	action[Mario.KEY_LEFT] = true;
+    	action[Mario.KEY_SPEED] = true;
+    	action[Mario.KEY_JUMP] = false;
+    }
+    
+    public void forward(){
+    	currentDirection = RIGHT;
+    	action[Mario.KEY_LEFT] = false;
+    	action[Mario.KEY_RIGHT] = true;
+    	action[Mario.KEY_UP] = false;
+    	
+    }
+    public void reset()
+    {
+        action = new boolean[Environment.numberOfButtons];
+        action[Mario.KEY_RIGHT] = true;
+        action[Mario.KEY_SPEED] = true;
+    }
+}

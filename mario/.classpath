@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+		<accessrules>
+			<accessrule kind="accessible" pattern="sun/reflect/**"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="var" path="Mario_Home/lib/jdom.jar"/>
+	<classpathentry kind="var" path="Mario_Home/lib/junit-4.8.2.jar"/>
+	<classpathentry kind="var" path="Mario_Home/lib/org.testng.jar"/>
+	<classpathentry kind="var" path="Mario_Home/lib/jblas-1.2.4.jar" sourcepath="/jblas_source/"/>
+	<classpathentry kind="var" path="Mario_Home"/>
+	<classpathentry kind="var" path="Mario_Home/lib/weka.jar" sourcepath="/Mario_Home/lib/weka-src.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
