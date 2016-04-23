@@ -4,6 +4,12 @@ import ch.idsia.agents.Agent;
 import ch.idsia.benchmark.mario.engine.sprites.Mario;
 import ch.idsia.benchmark.mario.environments.Environment;
 import weka.core.*;
+import weka.core.converters.*;
+import weka.core.converters.ConverterUtils.DataSource;
+import weka.core.converters.ArffLoader.ArffReader;
+
+import java.io.*;
+
 import java.util.*;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
@@ -15,6 +21,13 @@ public class StatusRecorder {
 	
 	public static final List<String> attrbuteNames = Arrays.asList("","","");
 	
+	public static final int fieldLength = 19;
+	
+	public static final int fieldRowsStart = 3;
+	public static final int fieldRowsEnd = fieldLength;
+	public static final int fieldColsStart = 3;
+	public static final int fieldColsEnd = fieldLength - fieldColsStart;
+	public static final int fieldSize = (fieldRowsEnd-fieldRowsStart)*(fieldColsEnd-fieldColsStart);
 	private String filePath;
 	
 	public static  ArrayList<Attribute> attributes;
@@ -22,8 +35,13 @@ public class StatusRecorder {
 	private BasicMarioAIAgent currentAgent;
 	private Environment currentEnvironment;
 	
-	public Instance encodeStatus(){
-		
+	public Instance encodeStatus(List<Float> input){
+		Instance output = new DenseInstance(input.size());
+		for(int i=0;i<input.size();i++){
+			output.setValue(i, input.get(i));
+			
+		}
+		return output;
 	}
 	
 	public void createDataFile(){
@@ -82,7 +100,9 @@ public class StatusRecorder {
 	}
 	
 	public int[] getActionFromClassifier(){
-		
+		//TODO:write function
+		int[] output = new int[0];
+		return output;
 	}
 	
 	public List<Float> statusToList(){
@@ -101,18 +121,44 @@ public class StatusRecorder {
 		//levelScene
 		output.addAll(getNearEnviroment());
 		
+		//class
+		
 		
 		
 		
 		return output;
-		MultilayerPerceptron myClassifier;
+		/*MultilayerPerceptron myClassifier;
 		Instances dataset = new Instances("eval",attributes,0);
 		output.toArray(new double[0])
 		Instance data = new DenseInstance(weight, attValues)
-		myClassifier.classifyInstance(instance)
+		myClassifier.classifyInstance(instance)*/
 		
 		
 		
+	}
+	
+	public static int saveToARFF(Instances dataset, String fileName){
+		ArffSaver saver = new ArffSaver();
+		saver.setInstances(dataset);
+		try{
+			saver.setFile(new File(fileName));
+			saver.writeBatch();
+		}
+		catch(IOException e){
+			return -1;
+		}
+		return 0;				
+	}
+	
+	public static Instances fromARFF(String fileName){
+		try{
+			DataSource source  = new DataSource(fileName);
+			Instances output = source.getDataSet();
+			return output;
+		}
+		catch(Exception e){
+			return null;
+		}
 	}
 	
 	public StatusRecorder(BasicMarioAIAgent agent) {

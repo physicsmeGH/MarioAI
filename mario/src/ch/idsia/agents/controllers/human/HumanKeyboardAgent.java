@@ -64,6 +64,13 @@ public class HumanKeyboardAgent extends KeyAdapter implements Agent
     public void integrateObservation(Environment environment)
     {
         levelScene = environment.getLevelSceneObservationZ(zLevelScene);
+        for(int i=1;i<19;i++){
+			for(int j=1;j<19;j++){
+				System.out.print(levelScene[i][j]+",\t");
+			}
+			System.out.println();
+		}
+		System.out.println("====================================");
         enemies = environment.getEnemiesObservationZ(zLevelEnemies);
         mergedObservation = environment.getMergedObservationZZ(1, 0);
 

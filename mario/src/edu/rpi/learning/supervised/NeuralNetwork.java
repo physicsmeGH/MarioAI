@@ -252,7 +252,7 @@ public class NeuralNetwork {
 		input.add(3.1);
 		myNN.forwardPropagate(input);
 		System.out.println(myNN.predict(input).toString());
-		w
+		
 		
 		myNN.y= new DoubleMatrix(1);
 		myNN.y.put(0, 5.9);

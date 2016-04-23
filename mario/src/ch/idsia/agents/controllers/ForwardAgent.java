@@ -60,7 +60,14 @@ public class ForwardAgent extends BasicMarioAIAgent implements Agent
 	}
 
 	private boolean DangerOfGap()
-	{
+	{	
+		for(int i=1;i<19;i++){
+			for(int j=1;j<19;j++){
+				System.out.print(levelScene[i][j]+",");
+			}
+			System.out.println();
+		}
+		System.out.println("====================================");
 		return DangerOfGap(levelScene);
 	}
 
