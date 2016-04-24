@@ -71,7 +71,9 @@ private static final String[] allowed = new String[]{
         "-stop",
         "-s",
         "-rec",
-        "-rep"
+        "-rep",
+        
+        "-fn" //file name
 };
 
 public ParameterContainer()
